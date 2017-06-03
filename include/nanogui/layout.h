@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_LAYOUT
+#define NG_LAYOUT
 
 #include <nanogui/compat.h>
 #include <nanogui/object.h>
@@ -326,3 +327,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

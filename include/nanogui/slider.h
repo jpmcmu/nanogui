@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_SLIDER
+#define NG_SLIDER
 
 #include <nanogui/widget.h>
 
@@ -60,3 +61,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

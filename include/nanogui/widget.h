@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_WIDGET
+#define NG_WIDGET
 
 #include <nanogui/object.h>
 #include <vector>
@@ -261,3 +262,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

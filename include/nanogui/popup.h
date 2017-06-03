@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_POPUP
+#define NG_POPUP
 
 #include <nanogui/window.h>
 
@@ -72,3 +73,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

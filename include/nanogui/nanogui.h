@@ -9,7 +9,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#pragma once
+#ifndef NG_NANOGUI
+#define NG_NANOGUI
 
 #include <nanogui/common.h>
 #include <nanogui/widget.h>
@@ -39,3 +40,5 @@
 #include <nanogui/tabheader.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/glcanvas.h>
+
+#endif

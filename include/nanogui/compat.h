@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_COMPAT
+#define NG_COMPAT
 
 #include <stdio.h>
 
@@ -19,4 +20,6 @@
 #else
 /// Platform dependent snprintf (``_snprintf`` for MSVC, ``snprintf`` otherwise).
 #define NANOGUI_SNPRINTF snprintf
+#endif
+
 #endif

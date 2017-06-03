@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_LABEL
+#define NG_LABEL
 
 #include <nanogui/widget.h>
 
@@ -62,3 +63,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif NG_LABEL

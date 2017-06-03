@@ -21,14 +21,15 @@
 #include <chrono>
 #include <iostream>
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(TARGET_OS_IPHONE)
     #include <locale.h>
     #include <signal.h>
-    #include <sys/dir.h>
+//    #include <sys/dir.h>
 #endif
 
 NAMESPACE_BEGIN(nanogui)
 
+#if 0
 extern std::map<GLFWwindow *, Screen *> __nanogui_screens;
 
 void init() {
@@ -120,6 +121,8 @@ void shutdown() {
     glfwTerminate();
 }
 
+#endif
+
 std::array<char, 8> utf8(int c) {
     std::array<char, 8> seq;
     int n = 0;
@@ -141,6 +144,7 @@ std::array<char, 8> utf8(int c) {
     return seq;
 }
 
+#if 0
 int __nanogui_get_image(NVGcontext *ctx, const std::string &name, uint8_t *data, uint32_t size) {
     static std::map<std::string, int> iconCache;
     auto it = iconCache.find(name);
@@ -182,7 +186,7 @@ loadImageDirectory(NVGcontext *ctx, const std::string &path) {
             std::make_pair(img, fullName.substr(0, fullName.length() - 4)));
 #if !defined(_WIN32)
     }
-    closedir(dp);
+    losedir(dp);
 #else
     } while (FindNextFileA(handle, &ffd) != 0);
     FindClose(handle);
@@ -267,6 +271,16 @@ std::string file_dialog(const std::vector<std::pair<std::string, std::string>> &
 #endif
 }
 #endif
+#endif
+
+const char* (*ngGetClipboardString)(Screen*) = nullptr;
+void (*ngSetClipboardString)(Screen*,const char* string) = nullptr;
+double (*ngGetTime)(void) = nullptr;
+void (*ngSetCursor)(void* platformWindow,Cursor cursor) = nullptr;
+void (*ngGetWindowSize)(void* platformWindow,int* x, int* y) = nullptr;
+void (*ngGetFramebufferSize)(void* platformWindow,int* x, int* y) = nullptr;
+void (*ngSwapBuffers)(void* platformWindow) = nullptr;
+void (*ngMakeContextCurrent)(void* platformWindow) = nullptr;
 
 void Object::decRef(bool dealloc) const noexcept {
     --m_refCount;

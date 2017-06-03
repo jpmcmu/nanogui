@@ -29,80 +29,25 @@ class NANOGUI_EXPORT Screen : public Widget {
     friend class Window;
 public:
     /**
-     * Create a new Screen instance
+     * \brief Default constructor
      *
-     * \param size
-     *     Size in pixels at 96 dpi (on high-DPI screens, the actual resolution
-     *     in terms of hardware pixels may be larger by an integer factor)
+     * Performs no initialization at all. Use this if the application is
+     * responsible for setting up GLFW, OpenGL, etc.
      *
-     * \param caption
-     *     Window title (in UTF-8 encoding)
-     *
-     * \param resizable
-     *     If creating a window, should it be resizable?
-     *
-     * \param fullscreen
-     *     Specifies whether to create a windowed or full-screen view
-     *
-     * \param colorBits
-     *     Number of bits per pixel dedicated to the R/G/B color components
-     *
-     * \param alphaBits
-     *     Number of bits per pixel dedicated to the alpha channel
-     *
-     * \param depthBits
-     *     Number of bits per pixel dedicated to the Z-buffer
-     *
-     * \param stencilBits
-     *     Number of bits per pixel dedicated to the stencil buffer (recommended
-     *     to set this to 8. NanoVG can draw higher-quality strokes using a
-     *     stencil buffer)
-     *
-     * \param nSamples
-     *     Number of MSAA samples (set to 0 to disable)
-     *
-     * \param glMajor
-     *     The requested OpenGL Major version number.  Default is 3, if changed
-     *     the value must correspond to a forward compatible core profile (for
-     *     portability reasons).  For example, set this to 4 and \ref glMinor to 1
-     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *     invalid profile will result in no context (and therefore no GUI)
-     *     being created.
-     *
-     * \param glMinor
-     *     The requested OpenGL Minor version number.  Default is 3, if changed
-     *     the value must correspond to a forward compatible core profile (for
-     *     portability reasons).  For example, set this to 1 and \ref glMajor to 4
-     *     for a forward compatible core OpenGL 4.1 profile.  Requesting an
-     *     invalid profile will result in no context (and therefore no GUI)
-     *     being created.
      */
-    Screen(const Vector2i &size, const std::string &caption,
-           bool resizable = true, bool fullscreen = false, int colorBits = 8,
-           int alphaBits = 8, int depthBits = 24, int stencilBits = 8,
-           int nSamples = 0,
-           unsigned int glMajor = 3, unsigned int glMinor = 3);
+    Screen();
 
     /// Release all resources
     virtual ~Screen();
 
-    /// Get the window title bar caption
-    const std::string &caption() const { return mCaption; }
-
-    /// Set the window title bar caption
-    void setCaption(const std::string &caption);
+    /// Initialize the \ref Screen
+    void initialize(void* platformWindow);
 
     /// Return the screen's background color
     const Color &background() const { return mBackground; }
 
     /// Set the screen's background color
     void setBackground(const Color &background) { mBackground = background; }
-
-    /// Set the top-level window visibility (no effect on full-screen windows)
-    void setVisible(bool visible);
-
-    /// Set window size
-    void setSize(const Vector2i& size);
 
     /// Draw the Screen contents
     virtual void drawAll();
@@ -128,14 +73,11 @@ public:
     /// Return the last observed mouse position value
     Vector2i mousePos() const { return mMousePos; }
 
-    /// Return a pointer to the underlying GLFW window data structure
-    GLFWwindow *glfwWindow() { return mGLFWWindow; }
+    /// Return a pointer to the underlying platform window
+    void* platformWindow() {return mPlatformWindow; }
 
     /// Return a pointer to the underlying nanoVG draw context
     NVGcontext *nvgContext() { return mNVGContext; }
-
-    void setShutdownGLFWOnDestruct(bool v) { mShutdownGLFWOnDestruct = v; }
-    bool shutdownGLFWOnDestruct() { return mShutdownGLFWOnDestruct; }
 
     using Widget::performLayout;
 
@@ -143,26 +85,6 @@ public:
     void performLayout() {
         Widget::performLayout(mNVGContext);
     }
-
-public:
-    /********* API for applications which manage GLFW themselves *********/
-
-    /**
-     * \brief Default constructor
-     *
-     * Performs no initialization at all. Use this if the application is
-     * responsible for setting up GLFW, OpenGL, etc.
-     *
-     * In this case, override \ref Screen and call \ref initalize() with a
-     * pointer to an existing \c GLFWwindow instance
-     *
-     * You will also be responsible in this case to deliver GLFW callbacks
-     * to the appropriate callback event handlers below
-     */
-    Screen();
-
-    /// Initialize the \ref Screen
-    void initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct);
 
     /* Event handlers */
     bool cursorPosCallbackEvent(double x, double y);
@@ -181,9 +103,8 @@ public:
     void drawWidgets();
 
 protected:
-    GLFWwindow *mGLFWWindow;
+    void *mPlatformWindow;
     NVGcontext *mNVGContext;
-    GLFWcursor *mCursors[(int) Cursor::CursorCount];
     Cursor mCursor;
     std::vector<Widget *> mFocusPath;
     Vector2i mFBSize;
@@ -196,7 +117,6 @@ protected:
     bool mProcessEvents;
     Color mBackground;
     std::string mCaption;
-    bool mShutdownGLFWOnDestruct;
     bool mFullscreen;
 };
 

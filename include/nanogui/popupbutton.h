@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_POPUPBUTTON
+#define NG_POPUPBUTTON
 
 #include <nanogui/button.h>
 #include <nanogui/popup.h>
@@ -49,3 +50,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

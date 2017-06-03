@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_BUTTON
+#define NG_BUTTON
 
 #include <nanogui/widget.h>
 
@@ -93,3 +94,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

@@ -281,7 +281,7 @@ void TextBox::draw(NVGcontext* ctx) {
 bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                                int modifiers) {
 
-    if (button == GLFW_MOUSE_BUTTON_1 && down && !mFocused) {
+    if (button == NG_MOUSE_BUTTON_1 && down && !mFocused) {
         if (!mSpinnable || spinArea(p) == SpinArea::None) /* not on scrolling arrows */
             requestFocus();
     }
@@ -291,7 +291,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
             mMouseDownPos = p;
             mMouseDownModifier = modifiers;
 
-            double time = glfwGetTime();
+            double time = ngGetTime();
             if (time - mLastClick < 0.25) {
                 /* Double-click: select all text */
                 mSelectionPos = 0;
@@ -310,7 +310,7 @@ bool TextBox::mouseButtonEvent(const Vector2i &p, int button, bool down,
                 mMouseDownPos = p;
                 mMouseDownModifier = modifiers;
 
-                double time = glfwGetTime();
+                double time = ngGetTime();
                 if (time - mLastClick < 0.25) {
                     /* Double-click: reset to default value */
                     mValue = mDefaultValue;
@@ -398,9 +398,9 @@ bool TextBox::focusEvent(bool focused) {
 
 bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifiers) {
     if (mEditable && focused()) {
-        if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-            if (key == GLFW_KEY_LEFT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+        if (action == NG_PRESS || action == NG_REPEAT) {
+            if (key == NG_KEY_LEFT) {
+                if (modifiers == NG_MOD_SHIFT) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -409,8 +409,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos > 0)
                     mCursorPos--;
-            } else if (key == GLFW_KEY_RIGHT) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key == NG_KEY_RIGHT) {
+                if (modifiers == NG_MOD_SHIFT) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -419,8 +419,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
 
                 if (mCursorPos < (int) mValueTemp.length())
                     mCursorPos++;
-            } else if (key == GLFW_KEY_HOME) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key == NG_KEY_HOME) {
+                if (modifiers == NG_MOD_SHIFT) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -428,8 +428,8 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = 0;
-            } else if (key == GLFW_KEY_END) {
-                if (modifiers == GLFW_MOD_SHIFT) {
+            } else if (key == NG_KEY_END) {
+                if (modifiers == NG_MOD_SHIFT) {
                     if (mSelectionPos == -1)
                         mSelectionPos = mCursorPos;
                 } else {
@@ -437,30 +437,30 @@ bool TextBox::keyboardEvent(int key, int /* scancode */, int action, int modifie
                 }
 
                 mCursorPos = (int) mValueTemp.size();
-            } else if (key == GLFW_KEY_BACKSPACE) {
+            } else if (key == NG_KEY_BACKSPACE) {
                 if (!deleteSelection()) {
                     if (mCursorPos > 0) {
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos - 1);
                         mCursorPos--;
                     }
                 }
-            } else if (key == GLFW_KEY_DELETE) {
+            } else if (key == NG_KEY_DELETE) {
                 if (!deleteSelection()) {
                     if (mCursorPos < (int) mValueTemp.length())
                         mValueTemp.erase(mValueTemp.begin() + mCursorPos);
                 }
-            } else if (key == GLFW_KEY_ENTER) {
+            } else if (key == NG_KEY_ENTER) {
                 if (!mCommitted)
                     focusEvent(false);
-            } else if (key == GLFW_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key == NG_KEY_A && modifiers == SYSTEM_COMMAND_MOD) {
                 mCursorPos = (int) mValueTemp.length();
                 mSelectionPos = 0;
-            } else if (key == GLFW_KEY_X && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key == NG_KEY_X && modifiers == SYSTEM_COMMAND_MOD) {
                 copySelection();
                 deleteSelection();
-            } else if (key == GLFW_KEY_C && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key == NG_KEY_C && modifiers == SYSTEM_COMMAND_MOD) {
                 copySelection();
-            } else if (key == GLFW_KEY_V && modifiers == SYSTEM_COMMAND_MOD) {
+            } else if (key == NG_KEY_V && modifiers == SYSTEM_COMMAND_MOD) {
                 deleteSelection();
                 pasteFromClipboard();
             }
@@ -518,7 +518,7 @@ bool TextBox::copySelection() {
         if (begin > end)
             std::swap(begin, end);
 
-        glfwSetClipboardString(sc->glfwWindow(),
+        ngSetClipboardString(sc,
                                mValueTemp.substr(begin, end).c_str());
         return true;
     }
@@ -528,7 +528,7 @@ bool TextBox::copySelection() {
 
 void TextBox::pasteFromClipboard() {
     Screen *sc = dynamic_cast<Screen *>(this->window()->parent());
-    const char* cbstr = glfwGetClipboardString(sc->glfwWindow());
+    const char* cbstr = ngGetClipboardString(sc);
     if (cbstr)
         mValueTemp.insert(mCursorPos, std::string(cbstr));
 }
@@ -559,7 +559,7 @@ void TextBox::updateCursor(NVGcontext *, float lastx,
                            const NVGglyphPosition *glyphs, int size) {
     // handle mouse cursor events
     if (mMouseDownPos.x() != -1) {
-        if (mMouseDownModifier == GLFW_MOD_SHIFT) {
+        if (mMouseDownModifier == NG_MOD_SHIFT) {
             if (mSelectionPos == -1)
                 mSelectionPos = mCursorPos;
         } else

@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_COMBOBOX
+#define NG_COMBOBOX
 
 #include <nanogui/popupbutton.h>
 
@@ -58,3 +59,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

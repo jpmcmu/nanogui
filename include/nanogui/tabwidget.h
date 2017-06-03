@@ -13,7 +13,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_TABWIDGET
+#define NG_TABWIDGET
 
 #include <nanogui/widget.h>
 #include <functional>
@@ -98,3 +99,5 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

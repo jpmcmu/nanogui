@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_TABHEADER
+#define NG_TABHEADER
 
 #include <nanogui/widget.h>
 #include <vector>
@@ -177,3 +178,5 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

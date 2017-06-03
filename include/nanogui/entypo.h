@@ -3,7 +3,8 @@
  * by Daniel Bruce
  */
 
-#pragma once
+#ifndef NG_ENTYPO
+#define NG_ENTYPO
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -293,3 +294,6 @@
 #define ENTYPO_ICON_SMASHING             0xF357
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+#endif
+

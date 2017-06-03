@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_GLUTIL
+#define NG_GLUTIL
 
 #include <nanogui/opengl.h>
 #include <Eigen/Geometry>
@@ -653,3 +654,5 @@ extern NANOGUI_EXPORT Matrix4f scale(const Matrix4f &m, const Vector3f &v);
 extern NANOGUI_EXPORT Matrix4f translate(const Matrix4f &m, const Vector3f &v);
 
 NAMESPACE_END(nanogui)
+
+#endif

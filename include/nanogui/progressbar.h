@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_PROGRESSBAR
+#define NG_PROGRESSBAR
 
 #include <nanogui/widget.h>
 
@@ -38,3 +39,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

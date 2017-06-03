@@ -19,23 +19,29 @@
 NAMESPACE_BEGIN(nanogui)
 
 Window::Window(Widget *parent, const std::string &title)
-    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false) { }
+    : Widget(parent), mTitle(title), mButtonPanel(nullptr), mModal(false), mDrag(false), mFullscreen(false) { }
 
 Vector2i Window::preferredSize(NVGcontext *ctx) const {
     if (mButtonPanel)
         mButtonPanel->setVisible(false);
+
     Vector2i result = Widget::preferredSize(ctx);
-    if (mButtonPanel)
-        mButtonPanel->setVisible(true);
 
-    nvgFontSize(ctx, 18.0f);
-    nvgFontFace(ctx, "sans-bold");
-    float bounds[4];
-    nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
+    if(mModal) {
+        if (mButtonPanel)
+            mButtonPanel->setVisible(true);
 
-    return result.cwiseMax(Vector2i(
-        bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]
-    ));
+        nvgFontSize(ctx, 18.0f);
+        nvgFontFace(ctx, "sans-bold");
+        float bounds[4];
+        nvgTextBounds(ctx, 0, 0, mTitle.c_str(), nullptr, bounds);
+
+        result = result.cwiseMax(Vector2i(
+            bounds[2]-bounds[0] + 20, bounds[3]-bounds[1]
+        ));
+    }
+
+    return result;
 }
 
 Widget *Window::buttonPanel() {
@@ -47,6 +53,13 @@ Widget *Window::buttonPanel() {
 }
 
 void Window::performLayout(NVGcontext *ctx) {
+    
+    if( mFullscreen 
+        && mParent != nullptr) {
+        setSize(mParent->size());
+        setPosition(Vector2i(0,0));
+    }
+
     if (!mButtonPanel) {
         Widget::performLayout(ctx);
     } else {
@@ -64,77 +77,80 @@ void Window::performLayout(NVGcontext *ctx) {
 }
 
 void Window::draw(NVGcontext *ctx) {
-    int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
-    int hh = mTheme->mWindowHeaderHeight;
 
-    /* Draw window */
-    nvgSave(ctx);
-    nvgBeginPath(ctx);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+    if(mModal) {
+        int ds = mTheme->mWindowDropShadowSize, cr = mTheme->mWindowCornerRadius;
+        int hh = mTheme->mWindowHeaderHeight;
 
-    nvgFillColor(ctx, mMouseFocus ? mTheme->mWindowFillFocused
-                                  : mTheme->mWindowFillUnfocused);
-    nvgFill(ctx);
-
-    /* Draw a drop shadow */
-    NVGpaint shadowPaint = nvgBoxGradient(
-        ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
-        mTheme->mDropShadow, mTheme->mTransparent);
-
-    nvgBeginPath(ctx);
-    nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
-    nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
-    nvgPathWinding(ctx, NVG_HOLE);
-    nvgFillPaint(ctx, shadowPaint);
-    nvgFill(ctx);
-
-    if (!mTitle.empty()) {
-        /* Draw header */
-        NVGpaint headerPaint = nvgLinearGradient(
-            ctx, mPos.x(), mPos.y(), mPos.x(),
-            mPos.y() + hh,
-            mTheme->mWindowHeaderGradientTop,
-            mTheme->mWindowHeaderGradientBot);
-
+        /* Draw window */
+        nvgSave(ctx);
         nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
 
-        nvgFillPaint(ctx, headerPaint);
+        nvgFillColor(ctx, mMouseFocus ? mTheme->mWindowFillFocused
+                                      : mTheme->mWindowFillUnfocused);
         nvgFill(ctx);
 
-        nvgBeginPath(ctx);
-        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
-        nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
+        /* Draw a drop shadow */
+        NVGpaint shadowPaint = nvgBoxGradient(
+            ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr*2, ds*2,
+            mTheme->mDropShadow, mTheme->mTransparent);
 
-        nvgSave(ctx);
-        nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
-        nvgStroke(ctx);
-        nvgResetScissor(ctx);
+        nvgBeginPath(ctx);
+        nvgRect(ctx, mPos.x()-ds,mPos.y()-ds, mSize.x()+2*ds, mSize.y()+2*ds);
+        nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), mSize.y(), cr);
+        nvgPathWinding(ctx, NVG_HOLE);
+        nvgFillPaint(ctx, shadowPaint);
+        nvgFill(ctx);
+
+        if (!mTitle.empty()) {
+            /* Draw header */
+            NVGpaint headerPaint = nvgLinearGradient(
+                ctx, mPos.x(), mPos.y(), mPos.x(),
+                mPos.y() + hh,
+                mTheme->mWindowHeaderGradientTop,
+                mTheme->mWindowHeaderGradientBot);
+
+            nvgBeginPath(ctx);
+            nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+
+            nvgFillPaint(ctx, headerPaint);
+            nvgFill(ctx);
+
+            nvgBeginPath(ctx);
+            nvgRoundedRect(ctx, mPos.x(), mPos.y(), mSize.x(), hh, cr);
+            nvgStrokeColor(ctx, mTheme->mWindowHeaderSepTop);
+
+            nvgSave(ctx);
+            nvgIntersectScissor(ctx, mPos.x(), mPos.y(), mSize.x(), 0.5f);
+            nvgStroke(ctx);
+            nvgResetScissor(ctx);
+            nvgRestore(ctx);
+
+            nvgBeginPath(ctx);
+            nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
+            nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
+            nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
+            nvgStroke(ctx);
+
+            nvgFontSize(ctx, 18.0f);
+            nvgFontFace(ctx, "sans-bold");
+            nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+
+            nvgFontBlur(ctx, 2);
+            nvgFillColor(ctx, mTheme->mDropShadow);
+            nvgText(ctx, mPos.x() + mSize.x() / 2,
+                    mPos.y() + hh / 2, mTitle.c_str(), nullptr);
+
+            nvgFontBlur(ctx, 0);
+            nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
+                                       : mTheme->mWindowTitleUnfocused);
+            nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2 - 1,
+                    mTitle.c_str(), nullptr);
+        }
+
         nvgRestore(ctx);
-
-        nvgBeginPath(ctx);
-        nvgMoveTo(ctx, mPos.x() + 0.5f, mPos.y() + hh - 1.5f);
-        nvgLineTo(ctx, mPos.x() + mSize.x() - 0.5f, mPos.y() + hh - 1.5);
-        nvgStrokeColor(ctx, mTheme->mWindowHeaderSepBot);
-        nvgStroke(ctx);
-
-        nvgFontSize(ctx, 18.0f);
-        nvgFontFace(ctx, "sans-bold");
-        nvgTextAlign(ctx, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
-
-        nvgFontBlur(ctx, 2);
-        nvgFillColor(ctx, mTheme->mDropShadow);
-        nvgText(ctx, mPos.x() + mSize.x() / 2,
-                mPos.y() + hh / 2, mTitle.c_str(), nullptr);
-
-        nvgFontBlur(ctx, 0);
-        nvgFillColor(ctx, mFocused ? mTheme->mWindowTitleFocused
-                                   : mTheme->mWindowTitleUnfocused);
-        nvgText(ctx, mPos.x() + mSize.x() / 2, mPos.y() + hh / 2 - 1,
-                mTitle.c_str(), nullptr);
     }
-
-    nvgRestore(ctx);
     Widget::draw(ctx);
 }
 
@@ -154,7 +170,7 @@ void Window::center() {
 
 bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
                             int button, int /* modifiers */) {
-    if (mDrag && (button & (1 << GLFW_MOUSE_BUTTON_1)) != 0) {
+    if (mDrag && (button & (1 << NG_MOUSE_BUTTON_1)) != 0) {
         mPos += rel;
         mPos = mPos.cwiseMax(Vector2i::Zero());
         mPos = mPos.cwiseMin(parent()->size() - mSize);
@@ -166,7 +182,7 @@ bool Window::mouseDragEvent(const Vector2i &, const Vector2i &rel,
 bool Window::mouseButtonEvent(const Vector2i &p, int button, bool down, int modifiers) {
     if (Widget::mouseButtonEvent(p, button, down, modifiers))
         return true;
-    if (button == GLFW_MOUSE_BUTTON_1) {
+    if (button == NG_MOUSE_BUTTON_1) {
         mDrag = down && (p.y() - mPos.y()) < mTheme->mWindowHeaderHeight;
         return true;
     }

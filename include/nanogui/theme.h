@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_THEME
+#define NG_THEME
 
 #include <nanogui/common.h>
 #include <nanogui/object.h>
@@ -86,3 +87,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

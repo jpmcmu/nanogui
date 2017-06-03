@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_VSCROLLPANEL
+#define NG_VSCROLLPANEL
 
 #include <nanogui/widget.h>
 
@@ -41,3 +42,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

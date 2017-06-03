@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_COLORWHEEL
+#define NG_COLORWHEEL
 
 #include <nanogui/widget.h>
 
@@ -63,3 +64,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

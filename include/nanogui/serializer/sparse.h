@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_SPARSE
+#define NG_SPARSE
 
 #include <nanogui/serializer/core.h>
 #include <Eigen/SparseCore>
@@ -85,3 +86,5 @@ struct serialization_helper<Eigen::SparseMatrix<Scalar, Options, Index>> {
 
 NAMESPACE_END(detail)
 NAMESPACE_END(nanogui)
+
+#endif

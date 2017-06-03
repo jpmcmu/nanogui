@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_OPENGL
+#define NG_OPENGL
 
 #include <nanogui/common.h>
 
@@ -31,7 +32,10 @@
 #endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-#include <GLFW/glfw3.h>
+#ifndef GL_GENERATE_MIPMAP
+#define GL_GENERATE_MIPMAP 0x8191
+#endif
+
 #include <nanovg.h>
 
 NAMESPACE_BEGIN(nanogui)
@@ -48,3 +52,5 @@ inline bool nvgIsImageIcon(int value) { return value < 1024; }
 inline bool nvgIsFontIcon(int value) { return value >= 1024; }
 
 NAMESPACE_END(nanogui)
+
+#endif

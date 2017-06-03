@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_GRAPH
+#define NG_GRAPH
 
 #include <nanogui/widget.h>
 
@@ -59,3 +60,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

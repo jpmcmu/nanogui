@@ -13,7 +13,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_TEXTBOX
+#define NG_TEXTBOX
 
 #include <nanogui/compat.h>
 #include <nanogui/widget.h>
@@ -345,3 +346,5 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

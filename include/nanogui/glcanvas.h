@@ -9,7 +9,8 @@
     BSD-style license that can be found in the LICENSE.txt file.
 */
 
-#pragma once
+#ifndef NG_GLCANVAS
+#define NG_GLCANVAS
 
 #include <iostream>
 
@@ -65,3 +66,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

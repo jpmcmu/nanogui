@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_COLORPICKER
+#define NG_COLORPICKER
 
 #include <nanogui/popupbutton.h>
 
@@ -42,3 +43,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

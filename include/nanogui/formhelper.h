@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_FORMHELPER
+#define NG_FORMHELPER
 
 #include <nanogui/screen.h>
 #include <nanogui/label.h>
@@ -313,3 +314,5 @@ public:
 
 NAMESPACE_END(detail)
 NAMESPACE_END(nanogui)
+
+#endif

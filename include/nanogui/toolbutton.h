@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_TOOLBUTTON
+#define NG_TOOLBUTTON
 
 #include <nanogui/button.h>
 
@@ -32,3 +33,5 @@ public:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

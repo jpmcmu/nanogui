@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_CHECKBOX
+#define NG_CHECKBOX
 
 #include <nanogui/widget.h>
 
@@ -51,3 +52,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

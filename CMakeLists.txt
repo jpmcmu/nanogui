@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 
-project("NanoGUI")
+project("NanoGUI" C CXX)
 
 if (POLICY CMP0058)
   cmake_policy(SET CMP0058 NEW)
@@ -18,6 +18,7 @@ else()
   set(NANOGUI_USE_GLAD_DEFAULT OFF)
 endif()
 
+set(NANOGUI_BIN2C_PATH "" CACHE PATH "Path to bin2c program")
 option(NANOGUI_BUILD_EXAMPLE "Build NanoGUI example application?" ON)
 option(NANOGUI_BUILD_SHARED  "Build NanoGUI as a shared library?" ON)
 option(NANOGUI_BUILD_PYTHON  "Build a Python plugin for NanoGUI?" ON)
@@ -62,7 +63,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Compile GLFW
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
 
 # Python support: add NANOGUI_PYTHON flag to all targets
 if (NANOGUI_BUILD_PYTHON)
@@ -100,18 +101,18 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|Intel)$")
-  CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
+# if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|Intel)$")
+#   CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+#   CHECK_CXX_COMPILER_FLAG("-std=c++11" HAS_CPP11_FLAG)
 
-  if (HAS_CPP14_FLAG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-  elseif (HAS_CPP11_FLAG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  else()
-    message(FATAL_ERROR "Unsupported compiler -- pybind11 requires C++11 support!")
-  endif()
-endif()
+#   if (HAS_CPP14_FLAG)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+#   elseif (HAS_CPP11_FLAG)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#   else()
+#     message(FATAL_ERROR "Unsupported compiler -- pybind11 requires C++11 support!")
+#   endif()
+# endif()
 
 # Various optimizations for shared library release builds
 if (NANOGUI_BUILD_SHARED)
@@ -240,22 +241,23 @@ elseif(CMAKE_SYSTEM MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "BSD")
 endif()
 
 include_directories(${NANOGUI_EIGEN_INCLUDE_DIR} ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(resources ../bgfx/include ../bgfx/3rdparty/ ..//bx/include)
 
 # Run simple C converter to put font files into the data segment
-add_executable(bin2c resources/bin2c.c)
-set(bin2c_cmdline nanogui_resources.cpp nanogui_resources.h)
-file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
-foreach(file ${resources})
-  list(APPEND bin2c_cmdline ${file})
-endforeach()
+# add_executable(bin2c resources/bin2c.c)
+# set(bin2c_cmdline nanogui_resources.cpp nanogui_resources.h)
+# file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
+# foreach(file ${resources})
+#   list(APPEND bin2c_cmdline ${file})
+# endforeach()
 
 # Run bin2c on resource files
-add_custom_command(
-  OUTPUT nanogui_resources.cpp nanogui_resources.h
-  COMMAND $<TARGET_FILE:bin2c> ARGS ${bin2c_cmdline}
-  DEPENDS bin2c ${resources}
-  COMMENT "Running bin2c"
-  PRE_BUILD VERBATIM)
+# add_custom_command(
+#   OUTPUT nanogui_resources.cpp nanogui_resources.h
+#   COMMAND ${NANOGUI_BIN2C_PATH} ARGS ${bin2c_cmdline}
+#   # DEPENDS bin2c ${resources}
+#   COMMENT "Running bin2c"
+#   PRE_BUILD VERBATIM)
 
 # Needed to generated files
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -279,12 +281,11 @@ add_definitions(${NANOGUI_EXTRA_DEFS})
 # Compile main NanoGUI library
 add_library(nanogui-obj OBJECT
   # Merge NanoVG into the NanoGUI library
-  ext/nanovg/src/nanovg.c
+  ext/nanovg/src/nanovg_bgfx.cpp
   # Merge GLAD into the NanoGUI library (only if needed)
   ${LIBNANOGUI_EXTRA_SOURCE}
   # Fonts etc.
-  nanogui_resources.cpp
-  include/nanogui/glutil.h src/glutil.cpp
+  resources/nanogui_resources.h resources/nanogui_resources.cpp
   include/nanogui/common.h src/common.cpp
   include/nanogui/widget.h src/widget.cpp
   include/nanogui/theme.h src/theme.cpp
@@ -301,8 +302,6 @@ add_library(nanogui-obj OBJECT
   include/nanogui/slider.h src/slider.cpp
   include/nanogui/messagedialog.h src/messagedialog.cpp
   include/nanogui/textbox.h src/textbox.cpp
-  include/nanogui/imagepanel.h src/imagepanel.cpp
-  include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/colorpicker.h src/colorpicker.cpp
@@ -310,20 +309,18 @@ add_library(nanogui-obj OBJECT
   include/nanogui/stackedwidget.h src/stackedwidget.cpp
   include/nanogui/tabheader.h src/tabheader.cpp
   include/nanogui/tabwidget.h src/tabwidget.cpp
-  include/nanogui/glcanvas.h src/glcanvas.cpp
   include/nanogui/formhelper.h
   include/nanogui/toolbutton.h
   include/nanogui/opengl.h
   include/nanogui/nanogui.h
   include/nanogui/serializer/core.h
-  include/nanogui/serializer/opengl.h
   include/nanogui/serializer/sparse.h
   src/serializer.cpp
 )
 
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
   $<TARGET_OBJECTS:nanogui-obj>
-  $<TARGET_OBJECTS:glfw_objects>
+  # $<TARGET_OBJECTS:glfw_objects>
 )
 
 if (${NANOGUI_LIBRARY_TYPE} MATCHES "SHARED")

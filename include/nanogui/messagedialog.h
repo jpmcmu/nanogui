@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_MESSAGEDIALOG
+#define NG_MESSAGEDIALOG
 
 #include <nanogui/window.h>
 
@@ -46,3 +47,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

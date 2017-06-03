@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_CORE
+#define NG_CORE
 
 #include <nanogui/widget.h>
 #include <unordered_map>
@@ -405,3 +406,6 @@ struct serialization_helper<Widget> {
 
 NAMESPACE_END(detail)
 NAMESPACE_END(nanogui)
+
+#endif
+

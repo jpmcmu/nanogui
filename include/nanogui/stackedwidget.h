@@ -13,7 +13,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_STACKEDWIDGET
+#define NG_STACKEDWIDGET
 
 #include <nanogui/widget.h>
 
@@ -40,3 +41,5 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_WINDOW
+#define NG_WINDOW
 
 #include <nanogui/widget.h>
 
@@ -35,6 +36,9 @@ public:
     bool modal() const { return mModal; }
     /// Set whether or not this is a modal dialog
     void setModal(bool modal) { mModal = modal; }
+
+    bool fullscreen() const {return mFullscreen; }
+    void setFullscreen(bool fullscreen) {mFullscreen = fullscreen; }
 
     /// Return the panel used to house window buttons
     Widget *buttonPanel();
@@ -65,8 +69,11 @@ protected:
 protected:
     std::string mTitle;
     Widget *mButtonPanel;
+    bool mFullscreen;
     bool mModal;
     bool mDrag;
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

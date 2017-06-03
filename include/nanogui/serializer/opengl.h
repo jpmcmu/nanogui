@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_SERIALIZER_OPENGL
+#define NG_SERIALIZER_OPENGL
 
 #include <nanogui/serializer/core.h>
 #include <nanogui/glutil.h>
@@ -117,3 +118,6 @@ struct serialization_helper<GLShader> {
 
 NAMESPACE_END(detail)
 NAMESPACE_END(nanogui)
+
+#endif
+

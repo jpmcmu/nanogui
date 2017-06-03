@@ -11,7 +11,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_IMAGEPANEL
+#define NG_IMAGEPANEL
 
 #include <nanogui/widget.h>
 
@@ -51,3 +52,5 @@ protected:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif

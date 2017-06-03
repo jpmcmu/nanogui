@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_PYTHON
+#define NG_PYTHON
 
 #include <nanogui/common.h>
 #include <pybind11/pybind11.h>
@@ -74,3 +75,5 @@
     virtual bool resizeEvent(const ::nanogui::Vector2i &size) { \
         PYBIND11_OVERLOAD(bool, Parent, resizeEvent, size); \
     }
+
+#endif

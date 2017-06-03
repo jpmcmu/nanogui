@@ -12,7 +12,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_IMAGEVIEW
+#define NG_IMAGEVIEW
 
 #include <nanogui/widget.h>
 #include <nanogui/glutil.h>
@@ -170,3 +171,5 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif NG_IMAGEVIEW

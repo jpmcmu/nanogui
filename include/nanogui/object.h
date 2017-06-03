@@ -10,7 +10,8 @@
 */
 /** \file */
 
-#pragma once
+#ifndef NG_OBJECT
+#define NG_OBJECT
 
 #include <nanogui/common.h>
 #include <atomic>
@@ -169,3 +170,6 @@ private:
 };
 
 NAMESPACE_END(nanogui)
+
+#endif
+
