@@ -28,6 +28,7 @@
 #endif
 
 #include "nanovg.h"
+#include "nanovg_bgfx.h"
 
 #define NANOVG_VIEW_ID 255
 
